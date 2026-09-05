@@ -12,4 +12,11 @@ class Idea extends Model
 {
     /** @use HasFactory<IdeaFactory> */
     use HasFactory;
+
+    /** @var array<string> */
+    protected $fillable = [
+        'title',
+        'description',
+        'status',
+    ];
 }

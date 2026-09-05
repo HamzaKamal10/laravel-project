@@ -5,26 +5,45 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Idea;
+use App\Http\Requests\StoreIdeaRequest;
+use App\Http\Requests\UpdateIdeaRequest;
 use Illuminate\Http\Request;
 
 class IdeaController extends Controller
 {
-    public function store(Request $request)
+    public function index()
     {
-        // 1. التحقق من صحة البيانات المدخلة
-        $validated = $request->validate([
-            'title' => 'required|max:255',
-            'description' => 'required',
-        ]);
+        $ideas = Idea::latest()->get();
 
-        // 2. حفظ الفكرة في قاعدة البيانات
-        Idea::create([
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'status' => 'Pending',
-        ]);
+        return view('welcome', compact('ideas'));
+    }
 
-        // 3. إعادة توجيه المستخدم للصفحة الرئيسية
+    public function store(StoreIdeaRequest $request)
+    {
+        $data = $request->validated();
+        $data['status'] = 'Pending';
+
+        Idea::create($data);
+
+        return redirect('/');
+    }
+
+    public function show(Idea $idea)
+    {
+        return response()->json($idea);
+    }
+
+    public function update(UpdateIdeaRequest $request, Idea $idea)
+    {
+        $idea->update($request->validated());
+
+        return response()->json($idea);
+    }
+
+    public function destroy(Idea $idea)
+    {
+        $idea->delete();
+
         return redirect('/');
     }
 }
