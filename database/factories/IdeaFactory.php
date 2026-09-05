@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Idea;
@@ -18,7 +20,9 @@ class IdeaFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => fake()->sentence(),
+            'description' => fake()->paragraph(),
+            'status' => fake()->randomElement(['Pending', 'In Progress', 'Completed']),
         ];
     }
 }
