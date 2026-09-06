@@ -1,9 +1,9 @@
-/* مكون زر موحد يحافظ على شكل متناسق في صفحات التطبيق. */
+/* مكون زر موحد يحافظ على المحاذاة والحجم وحالات التركيز في صفحات التطبيق. */
 .btn {
-    @apply inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 font-medium text-white transition hover:opacity-90;
+    @apply inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
 }
 
-/* زر بإطار شفاف يستخدم للحالات غير النشطة في صف فلاتر الأفكار. */
+/* زر بإطار شفاف يستخدم للفلاتر والإجراءات الثانوية غير النشطة. */
 .btn-outlined {
-    @apply border border-border bg-transparent text-foreground hover:bg-primary/10;
+    @apply inline-flex items-center justify-center rounded-md border border-border bg-transparent px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary/50 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
 }

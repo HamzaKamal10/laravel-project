@@ -8,14 +8,13 @@
 @source '../views/**/*.blade.php';
 
 @theme {
-    /* ألوان أساسية قابلة لإعادة الاستخدام في جميع واجهات التطبيق. */
-    --color-background: oklch(0.98 0.01 95);
-    --color-foreground: oklch(0.25 0.03 260);
-    --color-primary: oklch(0.55 0.16 250);
-    /* ألوان البطاقات والحدود والنصوص الثانوية التي تستخدمها شبكة الأفكار. */
-    --color-card: oklch(1 0 0);
-    --color-border: oklch(0.88 0.02 260);
-    --color-muted-foreground: oklch(0.5 0.03 260);
+    /* ألوان الثيم الداكن المستوحاة من تصميم التطبيق في الفيديو. */
+    --color-background: oklch(0.08 0 0);
+    --color-foreground: oklch(0.96 0 0);
+    --color-primary: oklch(0.76 0.19 155);
+    --color-card: oklch(0.12 0 0);
+    --color-border: oklch(0.2 0 0);
+    --color-muted-foreground: oklch(0.62 0 0);
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }

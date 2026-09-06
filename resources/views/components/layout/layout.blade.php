@@ -6,7 +6,7 @@
     <title>Idea App</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-background text-foreground">
+<body class="min-h-screen bg-background text-foreground antialiased">
     <x-layout.nav />
 
     <main class="max-w-7xl mx-auto px-6 pb-10">

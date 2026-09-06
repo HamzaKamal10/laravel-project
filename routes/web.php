@@ -13,13 +13,16 @@ Route::redirect('/', '/ideas');
 Route::get('/ideas', [IdeaController::class, 'index'])
     ->middleware('auth')
     ->name('ideas.index');
+Route::get('/ideas/create', [IdeaController::class, 'create'])
+    ->middleware('auth')
+    ->name('ideas.create');
 Route::get('/ideas/{idea}', [IdeaController::class, 'show'])
     ->middleware('auth')
     ->name('ideas.show');
 Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy'])
     ->middleware('auth')
     ->name('ideas.destroy');
-Route::post('/ideas', [IdeaController::class, 'store']);
+Route::post('/ideas', [IdeaController::class, 'store'])->name('ideas.store');
 
 // تعرض هذه المسارات نموذج التسجيل وتتحقق من بيانات الحساب الجديد.
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
@@ -28,3 +31,6 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 // يعرض هذا المسار نموذج تسجيل الدخول.
 Route::get('/login', [SessionsController::class, 'create'])->name('login');
 Route::post('/login', [SessionsController::class, 'store']);
+Route::post('/logout', [SessionsController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');

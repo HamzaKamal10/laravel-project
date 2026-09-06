@@ -1,30 +1,35 @@
 <?php
 
-use App\Models\User;
-
 it('logs in a user', function (): void {
-    // ننشئ مستخدماً بكلمة المرور التي سيستخدمها اختبار المتصفح.
-    $user = User::factory()->create([
-        'password' => 'password',
-    ]);
+    $email = 'login-'.uniqid().'@example.com';
 
-    // نملأ نموذج الدخول ثم نتحقق من إنشاء جلسة مصادقة للمستخدم.
-    visit('/login')
-        ->fill('email', $user->email)
+    // ننشئ الحساب من المتصفح أولاً حتى تكون البيانات مرئية لخادم Browser نفسه.
+    visit('/register')
+        ->fill('name', 'Login User')
+        ->fill('email', $email)
         ->fill('password', 'password')
-        ->click('Sign In');
+        ->click('Create Account');
 
-    $this->assertAuthenticated();
+    // نفتح نموذج الدخول بعد إنشاء الحساب ثم نتحقق من الوصول للأفكار.
+    visit('/login')
+        ->fill('email', $email)
+        ->fill('password', 'password')
+        ->click('Sign In')
+        ->assertPathIs('/ideas')
+        ->assertSee('Ideas');
 });
 
 it('logs out a user', function (): void {
-    // نجهز مستخدماً مسجلاً دخوله قبل زيارة الصفحة الرئيسية.
-    $user = User::factory()->create();
-    $this->actingAs($user);
+    $email = 'logout-'.uniqid().'@example.com';
 
-    // نضغط على رابط تسجيل الخروج ثم نتحقق من انتهاء جلسة المستخدم.
-    visit('/')
-        ->click('Log Out');
-
-    $this->assertGuest();
+    // ننشئ مستخدماً عبر واجهة التسجيل ثم نضغط زر الخروج من الجلسة الحالية.
+    visit('/register')
+        ->fill('name', 'Logout User')
+        ->fill('email', $email)
+        ->fill('password', 'password')
+        ->click('Create Account')
+        // نضغط زر الخروج بعد اكتمال التسجيل ثم نتحقق من العودة لنموذج الدخول.
+        ->click('Log Out')
+        ->assertPathIs('/login')
+        ->assertSee('Log in');
 });

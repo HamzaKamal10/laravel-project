@@ -14,6 +14,12 @@ use Illuminate\View\View;
 
 class IdeaController extends Controller
 {
+    // يعرض نموذج إنشاء فكرة جديدة للمستخدم المسجل دخوله.
+    public function create(): View
+    {
+        return view('idea.create');
+    }
+
     // يجلب أفكار المستخدم الحالي فقط عبر علاقة User لتجنب عرض أفكار الآخرين.
     public function index(): View
     {
@@ -38,11 +44,12 @@ class IdeaController extends Controller
     public function store(StoreIdeaRequest $request)
     {
         $data = $request->validated();
-        $data['status'] = 'Pending';
+        // نربط الفكرة بالمستخدم الحالي حتى لا تصبح بلا مالك أو تظهر لمستخدم آخر.
+        $data['user_id'] = auth()->id();
 
         Idea::create($data);
 
-        return redirect('/');
+        return redirect()->route('ideas.index')->with('success', 'Idea created.');
     }
 
     // يعرض تفاصيل الفكرة بعد التأكد من أن المستخدم يملك صلاحية رؤيتها.

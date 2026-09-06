@@ -37,4 +37,14 @@ class SessionsController extends Controller
 
         return redirect('/')->with('success', 'You are now logged in.');
     }
+
+    // ينهي جلسة المستخدم ويجدد الجلسة لحماية بيانات المصادقة ثم يعيده لتسجيل الدخول.
+    public function destroy(Request $request): RedirectResponse
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('success', 'You are now logged out.');
+    }
 }
