@@ -4,18 +4,35 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Idea;
+use App\Enums\IdeaStatus;
 use App\Http\Requests\StoreIdeaRequest;
 use App\Http\Requests\UpdateIdeaRequest;
-use Illuminate\Http\Request;
+use App\Models\Idea;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 
 class IdeaController extends Controller
 {
-    public function index()
+    // يجلب أفكار المستخدم الحالي فقط عبر علاقة User لتجنب عرض أفكار الآخرين.
+    public function index(): View
     {
-        $ideas = Idea::latest()->get();
+        // نستخرج القيم المسموح بها من التعداد لمنع استخدام حالة غير معروفة.
+        $validStatuses = collect(IdeaStatus::cases())->pluck('value')->all();
+        $requestedStatus = request('status');
+        $status = in_array($requestedStatus, $validStatuses, true) ? $requestedStatus : null;
 
-        return view('welcome', compact('ideas'));
+        $ideas = auth()->user()->ideas()
+            // نضيف شرط الحالة فقط إذا كانت قيمة status صالحة.
+            ->when($status, function (Builder $query, string $status): Builder {
+                return $query->where('status', $status);
+            })
+            ->get();
+
+        // نستدعي منطق العد من النموذج ونمرر النتيجة إلى واجهة الأفكار.
+        $statusCounts = Idea::statusCounts(auth()->user());
+
+        return view('idea.index', compact('ideas', 'statusCounts'));
     }
 
     public function store(StoreIdeaRequest $request)
@@ -28,9 +45,12 @@ class IdeaController extends Controller
         return redirect('/');
     }
 
-    public function show(Idea $idea)
+    // يعرض تفاصيل الفكرة بعد التأكد من أن المستخدم يملك صلاحية رؤيتها.
+    public function show(Idea $idea): View
     {
-        return response()->json($idea);
+        Gate::authorize('view', $idea);
+
+        return view('idea.show', compact('idea'));
     }
 
     public function update(UpdateIdeaRequest $request, Idea $idea)
@@ -40,10 +60,12 @@ class IdeaController extends Controller
         return response()->json($idea);
     }
 
+    // يحذف الفكرة المطلوبة فقط بعد تطبيق سياسة الملكية ثم يعيد المستخدم للفهرس.
     public function destroy(Idea $idea)
     {
+        Gate::authorize('delete', $idea);
         $idea->delete();
 
-        return redirect('/');
+        return redirect()->route('ideas.index')->with('success', 'Idea deleted.');
     }
 }

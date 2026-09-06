@@ -16,7 +16,8 @@ class IdeaPolicy
 
     public function view(?User $user, Idea $idea): bool
     {
-        return true;
+        // يسمح بعرض الفكرة لمالكها فقط.
+        return $user?->id === $idea->user_id;
     }
 
     public function create(?User $user): bool
@@ -31,6 +32,7 @@ class IdeaPolicy
 
     public function delete(?User $user, Idea $idea): bool
     {
-        return true;
+        // يمنع حذف فكرة مستخدم آخر حتى لو عُرف رقمها.
+        return $user?->id === $idea->user_id;
     }
 }

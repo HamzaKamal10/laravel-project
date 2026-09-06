@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Idea;
+// نستورد نموذج المستخدم لأن المصنع ينشئ مستخدماً مرتبطاً بكل فكرة تجريبية.
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,9 +22,10 @@ class IdeaFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => User::factory(),
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
-            'status' => fake()->randomElement(['Pending', 'In Progress', 'Completed']),
+            'links' => [fake()->url()],
         ];
     }
 }

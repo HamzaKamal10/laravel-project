@@ -16,9 +16,10 @@ use Tests\TestCase;
 |
 */
 
+// يعيد هذا الـ trait تهيئة قاعدة البيانات بعد كل اختبار لمنع تداخل البيانات.
 pest()->extend(TestCase::class)
- // ->use(RefreshDatabase::class)
-    ->in('Feature');
+    ->use(RefreshDatabase::class)
+    ->in('Browser', 'Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------
