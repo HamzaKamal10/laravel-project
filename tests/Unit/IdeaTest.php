@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\IdeaStatus;
 use App\Models\Idea;
 use App\Models\User;
 
@@ -23,4 +24,21 @@ test('it can have steps', function (): void {
 
     // نعيد تحميل الفكرة للتأكد من قراءة الخطوة المحفوظة من قاعدة البيانات.
     expect($idea->fresh()->steps)->toHaveCount(1);
+});
+
+test('seeded ideas use valid enum status values', function (): void {
+    $this->artisan('db:seed', ['--class' => 'DatabaseSeeder'])->assertOk();
+
+    $ideas = Idea::query()->get();
+
+    expect($ideas)->not->toBeEmpty();
+
+    foreach ($ideas as $idea) {
+        expect($idea->status)->toBeInstanceOf(IdeaStatus::class);
+        expect($idea->status->value)->toBeIn([
+            IdeaStatus::PENDING->value,
+            IdeaStatus::IN_PROGRESS->value,
+            IdeaStatus::COMPLETED->value,
+        ]);
+    }
 });

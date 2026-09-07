@@ -25,6 +25,7 @@ class IdeaFactory extends Factory
             'user_id' => User::factory(),
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
+            'status' => \App\Enums\IdeaStatus::PENDING->value,
             'links' => [fake()->url()],
         ];
     }

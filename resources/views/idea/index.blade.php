@@ -10,13 +10,17 @@
         <a href="{{ route('ideas.create') }}" class="btn">New Idea</a>
     </header>
 
-    {{-- بطاقة دخول سريعة لنفس نموذج إنشاء الفكرة الموجود في التطبيق. --}}
-    <a href="{{ route('ideas.create') }}" class="group mt-8 block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-        <x-card class="flex items-center justify-between border-dashed bg-card/80 transition-colors group-hover:border-primary/50">
+        {{-- زر البطاقة يرسل حدث Alpine لفتح modal إنشاء الفكرة القابل لإعادة الاستخدام. --}}
+        <x-card
+            is="button"
+            type="button"
+            x-data
+            x-on:click="$dispatch('open-modal', 'create-idea')"
+            class="group mt-8 flex w-full cursor-pointer items-center justify-between border-dashed bg-card/80 text-left transition-colors hover:border-primary/50"
+        >
             <span class="font-medium text-foreground">What's the idea?</span>
             <span class="text-2xl leading-none text-muted-foreground transition-colors group-hover:text-primary" aria-hidden="true">+</span>
         </x-card>
-    </a>
 
     {{-- صف أزرار يتيح تصفية الأفكار حسب الحالة الحالية أو عرض جميع الأفكار. --}}
     <div class="mt-10 flex flex-wrap gap-2">
@@ -72,4 +76,10 @@
             </x-card>
         @endforelse
     </div>
+
+        {{-- نعرض modal الإنشاء قرب نهاية الصفحة حتى يبقى مستقلاً عن شبكة الأفكار. --}}
+        <x-modal name="create-idea" title="New Idea">
+            <p class="text-muted-foreground">Create your next idea from the dedicated form.</p>
+            <a href="{{ route('ideas.create') }}" class="btn mt-6">Create Idea</a>
+        </x-modal>
 </x-layout.layout>

@@ -33,7 +33,11 @@ class DatabaseSeeder extends Seeder
             ->create([
                 'title' => fake()->sentence(),
                 'description' => fake()->paragraph(),
-                'status' => fake()->randomElement(['Pending', 'In Progress', 'Completed']),
+                'status' => fake()->randomElement([
+                    \App\Enums\IdeaStatus::PENDING->value,
+                    \App\Enums\IdeaStatus::IN_PROGRESS->value,
+                    \App\Enums\IdeaStatus::COMPLETED->value,
+                ]),
             ]);
     }
 }
