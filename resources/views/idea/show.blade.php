@@ -42,6 +42,17 @@
             </div>
         </div>
 
+        {{-- يعرض الصورة المميزة عندما تكون متاحة. --}}
+        @if ($idea->image_path)
+            <div class="overflow-hidden rounded-xl">
+                <img
+                    src="{{ Storage::disk('public')->url($idea->image_path) }}"
+                    alt="{{ $idea->title }}"
+                    class="h-auto w-full object-cover"
+                >
+            </div>
+        @endif
+
         {{-- يعرض عنوان الفكرة وحالتها وتاريخ إنشائها بشكل بارز. --}}
         <header>
             <h1 class="text-4xl font-bold tracking-tight">{{ $idea->title }}</h1>
@@ -57,6 +68,39 @@
         <x-card>
             <p class="whitespace-pre-line leading-7 text-muted-foreground">{{ $idea->description }}</p>
         </x-card>
+
+        {{-- لا يظهر قسم الخطوات العملية إذا لم توجد خطوات. --}}
+        @if ($idea->steps->isNotEmpty())
+            <section class="space-y-4">
+                <h2 class="text-xl font-semibold">Actionable Steps</h2>
+
+                <div class="space-y-3">
+                    @foreach ($idea->steps as $step)
+                        <x-card class="transition-colors hover:border-primary/60">
+                            <form method="POST" action="{{ route('steps.update', $step) }}" class="flex items-start gap-3">
+                                @csrf
+                                @method('PATCH')
+                                
+                                <button
+                                    type="submit"
+                                    role="checkbox"
+                                    aria-checked="{{ $step->completed ? 'true' : 'false' }}"
+                                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 {{ $step->completed ? 'border-primary bg-primary text-primary-foreground' : 'border-input bg-transparent text-transparent hover:border-primary/50' }}"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </button>
+                                
+                                <span class="leading-relaxed {{ $step->completed ? 'text-muted-foreground line-through' : 'text-foreground' }}">
+                                    {{ $step->description }}
+                                </span>
+                            </form>
+                        </x-card>
+                    @endforeach
+                </div>
+            </section>
+        @endif
 
         {{-- لا يظهر قسم الروابط إذا كانت مصفوفة JSON فارغة. --}}
         @if ($idea->links && count($idea->links) > 0)

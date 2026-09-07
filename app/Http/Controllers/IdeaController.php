@@ -9,7 +9,9 @@ use App\Http\Requests\StoreIdeaRequest;
 use App\Http\Requests\UpdateIdeaRequest;
 use App\Models\Idea;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class IdeaController extends Controller
@@ -33,6 +35,7 @@ class IdeaController extends Controller
             ->when($status, function (Builder $query, string $status): Builder {
                 return $query->where('status', $status);
             })
+            ->latest()
             ->get();
 
         // نستدعي منطق العد من النموذج ونمرر النتيجة إلى واجهة الأفكار.
@@ -43,11 +46,35 @@ class IdeaController extends Controller
 
     public function store(StoreIdeaRequest $request)
     {
-        $data = $request->validated();
-        // نربط الفكرة بالمستخدم الحالي حتى لا تصبح بلا مالك أو تظهر لمستخدم آخر.
-        $data['user_id'] = auth()->id();
+        $imagePath = null;
 
-        Idea::create($data);
+        try {
+            DB::transaction(function () use ($request, &$imagePath) {
+                // نربط الفكرة بالمستخدم الحالي عبر العلاقة حتى لا تصبح بلا مالك أو تظهر لمستخدم آخر.
+                $idea = auth()->user()->ideas()->create($request->safe()->except(['steps', 'image']));
+
+                if ($request->hasFile('image')) {
+                    $imagePath = $request->file('image')->store('ideas', 'public');
+                    $idea->update(['image_path' => $imagePath]);
+                }
+
+                if ($request->has('steps')) {
+                    $steps = collect($request->input('steps'))->map(fn ($description) => [
+                        'description' => $description,
+                        'completed' => false,
+                    ])->all();
+
+                    $idea->steps()->createMany($steps);
+                }
+            });
+        } catch (\Throwable $e) {
+            // ننظف الملف اليتيم إذا فشلت المعاملة بعد تخزين الصورة.
+            if ($imagePath) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            throw $e;
+        }
 
         return redirect()->route('ideas.index')->with('success', 'Idea created.');
     }

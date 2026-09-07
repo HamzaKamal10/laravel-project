@@ -12,10 +12,16 @@ class Step extends Model
 {
     use HasFactory;
 
-    // تبدأ كل خطوة بحالة غير مكتملة إلى أن ينجزها المستخدم.
     protected $attributes = [
         'completed' => false,
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'completed' => 'boolean',
+        ];
+    }
 
     // علاقة ينتمي فيها كل Step إلى Idea واحدة عبر idea_id.
     public function idea(): BelongsTo

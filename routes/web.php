@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\IdeaController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SessionsController;
+use App\Http\Controllers\StepController;
 use Illuminate\Support\Facades\Route;
 
 // ينقل المسار الجذري المستخدم إلى صفحة أفكاره المخصصة.
@@ -22,7 +23,13 @@ Route::get('/ideas/{idea}', [IdeaController::class, 'show'])
 Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy'])
     ->middleware('auth')
     ->name('ideas.destroy');
-Route::post('/ideas', [IdeaController::class, 'store'])->name('ideas.store');
+Route::post('/ideas', [IdeaController::class, 'store'])
+    ->middleware('auth')
+    ->name('ideas.store');
+
+Route::patch('/steps/{step}', [StepController::class, 'update'])
+    ->middleware('auth')
+    ->name('steps.update');
 
 // تعرض هذه المسارات نموذج التسجيل وتتحقق من بيانات الحساب الجديد.
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');

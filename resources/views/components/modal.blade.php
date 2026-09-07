@@ -7,6 +7,7 @@
 <div
     x-data="{ show: false }"
     x-on:open-modal.window="show = $event.detail === '{{ $name }}'"
+    x-on:close-modal.window="show = false"
     x-on:keydown.escape.window="show = false"
     x-show="show"
     x-cloak
