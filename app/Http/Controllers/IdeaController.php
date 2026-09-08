@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\UpdateIdea;
 use App\Enums\IdeaStatus;
 use App\Http\Requests\StoreIdeaRequest;
 use App\Http\Requests\UpdateIdeaRequest;
@@ -59,9 +60,9 @@ class IdeaController extends Controller
                 }
 
                 if ($request->has('steps')) {
-                    $steps = collect($request->input('steps'))->map(fn ($description) => [
-                        'description' => $description,
-                        'completed' => false,
+                    $steps = collect($request->input('steps'))->map(fn (array $step) => [
+                        'description' => $step['description'],
+                        'completed' => (bool) ($step['completed'] ?? false),
                     ])->all();
 
                     $idea->steps()->createMany($steps);
@@ -89,11 +90,11 @@ class IdeaController extends Controller
         return view('idea.show', compact('idea'));
     }
 
-    public function update(UpdateIdeaRequest $request, Idea $idea)
+    public function update(UpdateIdeaRequest $request, Idea $idea, UpdateIdea $updateIdea)
     {
         Gate::authorize('update', $idea);
 
-        $idea->update($request->validated());
+        $updateIdea->handle($request->safe()->all(), $idea);
 
         return redirect()->route('ideas.show', $idea)->with('success', 'Idea updated.');
     }

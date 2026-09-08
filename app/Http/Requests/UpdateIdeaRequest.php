@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\File;
 
 class UpdateIdeaRequest extends FormRequest
 {
@@ -17,8 +18,15 @@ class UpdateIdeaRequest extends FormRequest
     {
         return [
             'title' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
+            'description' => 'sometimes|nullable|string',
             'status' => 'sometimes|required|string',
+            'image' => ['nullable', File::image()->max('5mb')],
+            'links' => 'nullable|array',
+            'links.*' => 'required|url|max:255',
+            'steps' => 'nullable|array',
+            'steps.*.id' => ['nullable', 'integer'],
+            'steps.*.description' => ['required', 'string', 'max:255'],
+            'steps.*.completed' => ['required', 'boolean'],
         ];
     }
 }

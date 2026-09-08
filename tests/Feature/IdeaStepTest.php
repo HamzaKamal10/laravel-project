@@ -24,7 +24,10 @@ test('an idea can be created with multiple steps', function (): void {
     $this->actingAs($user)->post(route('ideas.store'), [
         'title' => 'Idea With Steps',
         'status' => 'pending',
-        'steps' => ['Step 1', 'Step 2'],
+        'steps' => [
+            ['description' => 'Step 1', 'completed' => 0],
+            ['description' => 'Step 2', 'completed' => 0],
+        ],
     ]);
 
     $idea = Idea::where('title', 'Idea With Steps')->first();
@@ -43,10 +46,12 @@ test('empty step values fail validation', function (): void {
     $response = $this->actingAs($user)->post(route('ideas.store'), [
         'title' => 'Idea Empty Steps',
         'status' => 'pending',
-        'steps' => [''],
+        'steps' => [
+            ['description' => '', 'completed' => 0],
+        ],
     ]);
 
-    $response->assertSessionHasErrors('steps.0');
+    $response->assertSessionHasErrors('steps.0.description');
     $this->assertDatabaseMissing('ideas', ['title' => 'Idea Empty Steps']);
 });
 
@@ -56,10 +61,12 @@ test('a step description longer than 255 characters fails validation', function 
     $response = $this->actingAs($user)->post(route('ideas.store'), [
         'title' => 'Idea Long Step',
         'status' => 'pending',
-        'steps' => [str_repeat('a', 256)],
+        'steps' => [
+            ['description' => str_repeat('a', 256), 'completed' => 0],
+        ],
     ]);
 
-    $response->assertSessionHasErrors('steps.0');
+    $response->assertSessionHasErrors('steps.0.description');
 });
 
 test('an authorized user can toggle a step', function (): void {
