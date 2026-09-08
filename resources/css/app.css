@@ -1,7 +1,7 @@
-/* نستورد مكونات الواجهة قبل قواعد Tailwind لتجميعها داخل طبقة المكونات. */
-@import './components/btn.css' layer(components);
-@import './components/form.css' layer(components);
 @import 'tailwindcss';
+
+@import './components/btn.css';
+@import './components/form.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

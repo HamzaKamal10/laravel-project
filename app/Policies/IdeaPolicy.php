@@ -27,7 +27,7 @@ class IdeaPolicy
 
     public function update(?User $user, Idea $idea): bool
     {
-        return true;
+        return $user?->id === $idea->user_id;
     }
 
     public function delete(?User $user, Idea $idea): bool

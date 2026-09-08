@@ -20,25 +20,25 @@
             </a>
 
             <div class="flex items-center gap-3">
-                {{-- زر العرض فقط لأن مسار التعديل مؤجل في هذه المرحلة. --}}
-                <button type="button" class="btn-outlined inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium">
-                    {{-- أيقونة تعديل خارجية توضح الإجراء المؤجل بصرياً. --}}
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M14 3h7v7" />
-                        <path d="M10 14 21 3" />
-                        <path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" />
-                    </svg>
-                    Edit Idea
-                </button>
+                @can('update', $idea)
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'edit-idea')" class="btn-outlined inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M14 3h7v7" />
+                            <path d="M10 14 21 3" />
+                            <path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" />
+                        </svg>
+                        Edit Idea
+                    </button>
+                @endcan
 
                 {{-- يرسل النموذج طلب DELETE الحقيقي مع حماية CSRF. --}}
-                <form method="POST" action="{{ route('ideas.destroy', $idea) }}">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="rounded-md px-4 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-                        Delete
-                    </button>
-                </form>
+                @can('delete', $idea)
+                    <form method="POST" action="{{ route('ideas.destroy', $idea) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-outlined text-red-500 hover:border-red-500/50 hover:bg-red-500/10">Delete Idea</button>
+                    </form>
+                @endcan
             </div>
         </div>
 
@@ -81,16 +81,28 @@
                                 @csrf
                                 @method('PATCH')
                                 
+                                @can('update', $step)
                                 <button
                                     type="submit"
                                     role="checkbox"
                                     aria-checked="{{ $step->completed ? 'true' : 'false' }}"
-                                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 {{ $step->completed ? 'border-primary bg-primary text-primary-foreground' : 'border-input bg-transparent text-transparent hover:border-primary/50' }}"
+                                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 {{ $step->completed ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-transparent hover:border-primary/50' }}"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
                                 </button>
+                                @else
+                                <div
+                                    role="checkbox"
+                                    aria-checked="{{ $step->completed ? 'true' : 'false' }}"
+                                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border {{ $step->completed ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-transparent' }}"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </div>
+                                @endcan
                                 
                                 <span class="leading-relaxed {{ $step->completed ? 'text-muted-foreground line-through' : 'text-foreground' }}">
                                     {{ $step->description }}
@@ -126,4 +138,8 @@
             </section>
         @endif
     </div>
+
+    @can('update', $idea)
+        <x-idea.modal :idea="$idea" name="edit-idea" />
+    @endcan
 </x-layout.layout>

@@ -10,7 +10,7 @@ class UpdateIdeaRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('update', $this->route('idea'));
     }
 
     public function rules(): array

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\IdeaStatus;
 use App\Models\Idea;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -34,9 +35,9 @@ class DatabaseSeeder extends Seeder
                 'title' => fake()->sentence(),
                 'description' => fake()->paragraph(),
                 'status' => fake()->randomElement([
-                    \App\Enums\IdeaStatus::PENDING->value,
-                    \App\Enums\IdeaStatus::IN_PROGRESS->value,
-                    \App\Enums\IdeaStatus::COMPLETED->value,
+                    IdeaStatus::PENDING->value,
+                    IdeaStatus::IN_PROGRESS->value,
+                    IdeaStatus::COMPLETED->value,
                 ]),
             ]);
     }

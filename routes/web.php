@@ -23,6 +23,9 @@ Route::get('/ideas/{idea}', [IdeaController::class, 'show'])
 Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy'])
     ->middleware('auth')
     ->name('ideas.destroy');
+Route::patch('/ideas/{idea}', [IdeaController::class, 'update'])
+    ->middleware('auth')
+    ->name('ideas.update');
 Route::post('/ideas', [IdeaController::class, 'store'])
     ->middleware('auth')
     ->name('ideas.store');

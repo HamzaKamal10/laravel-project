@@ -84,14 +84,18 @@ class IdeaController extends Controller
     {
         Gate::authorize('view', $idea);
 
+        $idea->load('steps');
+
         return view('idea.show', compact('idea'));
     }
 
     public function update(UpdateIdeaRequest $request, Idea $idea)
     {
+        Gate::authorize('update', $idea);
+
         $idea->update($request->validated());
 
-        return response()->json($idea);
+        return redirect()->route('ideas.show', $idea)->with('success', 'Idea updated.');
     }
 
     // يحذف الفكرة المطلوبة فقط بعد تطبيق سياسة الملكية ثم يعيد المستخدم للفهرس.
